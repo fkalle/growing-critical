@@ -2,7 +2,7 @@
 *Felipe Yaroslav Kalle Kossio, Sven Goedeke, Benjamin van den Akker, Borja Ibarz, and Raoul-Martin Memmesheimer*, 
 [Phys. Rev. Lett. 121, 058301](https://doi.org/10.1103/PhysRevLett.121.058301)
 
-To replicate Figures 1, 2(a,b) and 3. 
+To replicate Figures 1, 2 and 3. 
 
 Install GNU Scientific Library and Octave:
 ```
