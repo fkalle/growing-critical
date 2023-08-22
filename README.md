@@ -1,6 +1,6 @@
 # Growing Critical: Self-Organized Criticality in a Developing Neural System
 *Felipe Yaroslav Kalle Kossio, Sven Goedeke, Benjamin van den Akker, Borja Ibarz, and Raoul-Martin Memmesheimer*, 
-[Phys. Rev. Lett. 121, 058301](https://doi.org/10.1103/PhysRevLett.121.058301)
+[Phys. Rev. Lett. 121, 058301](https://doi.org/10.1103/PhysRevLett.121.058301), [arXiv](https://doi.org/10.48550/arXiv.1811.02861).
 
 To replicate Figures 1, 2 and 3. 
 
