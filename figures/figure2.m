@@ -6,6 +6,7 @@
 FNAME_SP = "../data/nc/spiketime";		# File with spike times [milliseconds]
 FNAME_N = "../data/nc/neuron";			# File with neuron indices
 FNAME_R = "../data/nc/radii";			# File with neuron radii
+FNAME_O = "../data/nc/overlap";			# File with neuron total overlap
 FNAME_INIT = "../data/nc/initstate";		# File with initial state
 
 TIMEPOINTS = [0, 0.8e5, 8e5];			# Time points to plot [seconds]
@@ -37,13 +38,15 @@ endfunction
 
 ########################################################################################
 bfile = fopen(FNAME_INIT);
-N = fread(bfile, 1, 'int'); #Number of neurons
+N = fread(bfile, 1, 'int'); # Number of neurons
 start_time = fread(bfile, 1, 'double');
 net = fread(bfile, 11*N, 'double');
 fclose(bfile);
 net = reshape(net, 11, []);
-xs = net(2,:);
+xs = net(2,:); 
 ys = net(3,:);
+g = net(10,1); # Coupling proportionality constant [1/milliseconds]
+tau = net(8,1); # Time constant [milliseconds]
 
 bfile = fopen(FNAME_R);
 radii = fread(bfile, 'double');
@@ -62,6 +65,12 @@ bfile = fopen(FNAME_N);
 neuron = fread(bfile, 'int');
 fclose(bfile);
 neuron = neuron.+1; # Start neuron index from 1 instead of 0
+
+bfile = fopen(FNAME_O);
+overlap = fread(bfile, 'double');
+fclose(bfile);
+
+overlap = transpose(reshape(overlap, N+1, []));
 
 ########################################################################################
 for i=1:3
@@ -115,8 +124,52 @@ for i=1:3
 endfor
 
 ########################################################################################
-
 subplot(3,3,7:9)
+
+average_total_overlap = mean(overlap(:,2:end),2);
+
+interval = [0:1e6:2e8 (2e8+1e7):1e7:1e9];
+bin_ov = [];
+bin_av_ov =[];
+for i=1:1:length(interval)-1
+  ind = overlap(:,1) > interval(i) & overlap(:,1) < interval(i+1);
+  if(sum(ind) > 10)
+    bin_ov = [bin_ov ; mean(overlap(ind,:)) ];
+    bin_av_ov = [bin_av_ov; mean(average_total_overlap(ind))];
+  else 
+    bin_ov = [bin_ov ; overlap(ind,:) ];
+    bin_av_ov = [bin_av_ov; average_total_overlap(ind)];
+  endif
+endfor
+  
+hold off;
+
+for i=1:1:NPLOT
+  plot(bin_ov(:,1)/1e3, g*tau*bin_ov(:,i),
+    'color', [190,193,212]./255,
+    'linewidth', 1
+     );
+  hold on;
+endfor
+
+plot(bin_ov(:,1)/1e3, g*tau*bin_av_ov,'k', 'linewidth', 2);
+ylabel("g\\tau A");
+xlabel("Time");
+
+axis([0.0, 1e6,0.0, 1.55]);
+
+for i=1:1:3
+  plot([TIMEPOINTS(i),TIMEPOINTS(i)], [0,1.55], 'color', COLS(i,:));
+endfor
+
+set(gca(), 
+  'linewidth', 1,
+  'tickdir', 'out',
+  'ytick', [0, 0.5,1,1.5]
+);
+
+hold off;
+box off;
 
 print('figure2.eps', 
   '-S300,300',
